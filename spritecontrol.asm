@@ -65,13 +65,26 @@ deactivate
 
 
 init
+    ; set bitmap data for all sprites
+    ldy #0                                              ; sprite block  0..14
+    ldx #1                                              ; sprite number 1..15
+_sprLoop
+    tya
+    jsr callSetSpritePointer
+    txa
+    jsr setBitmapAddr
+    inx
+    iny
+    cpy #15
+    bne _sprLoop
+
+    ; Activate sprite layer
     jsr activate
     rts
 
 
 ; accu has to contain contain 0-15 
-; After routine SPRITE_PTR1  is set to address
-; of corresponding sprite block
+; After routine SPRITE_PTR1  is set to address of corresponding sprite block
 callSetSpritePointer
     asl
     asl
@@ -81,13 +94,13 @@ callSetSpritePointer
     sta SPRITE_PTR1+1
     rts
 
-; SPRITE_PTR1 is set to correct block
+; SPRITE_PTR1 has to be set to correct block
 on
     lda #SPR_SIZE_32 | SPR_LAYER_0 | SPR_LUT_0 | SPR_ENABLE
     sta (SPRITE_PTR1)
     rts
 
-; SPRITE_PTR1 is set to correct block
+; SPRITE_PTR1 has to be set to correct block
 off
     lda #SPR_SIZE_32 | SPR_LAYER_0 | SPR_LUT_0 
     sta (SPRITE_PTR1)
@@ -111,7 +124,7 @@ SPR_DATA_ADDR
 .word 13 * 1024
 .word 14 * 1024
 
-; SPRITE_PTR1 is set to correct block
+; SPRITE_PTR1 has to be set to correct block
 ; accu has to contain the sprite number 1-15, i.e. the value on the playing field
 setBitmapAddr    
     phx
@@ -133,6 +146,7 @@ setBitmapAddr
     ply
     plx
     rts
+
 
 X_OFFSET = 79 + 32
 Y_OFFSET = 41 + 32
