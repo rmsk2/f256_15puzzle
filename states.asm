@@ -68,6 +68,3 @@ callEnterFunc
 
 callLeaveFunc
     #callStateFunc GameState_t.funcLeave
-
-
-MSG_SAVE_ERR .text "Unable to save hiscore file. Press <Return>."
