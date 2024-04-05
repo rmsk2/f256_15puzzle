@@ -65,19 +65,12 @@ deactivate
 
 
 init
-    ldy #0
-_loop
-    tya
-    jsr callSetSpritePointer
-    jsr off
-    iny
-    cpy #16
-    bne _loop
-    jsr setPositions
     jsr activate
     rts
 
-; a contains 0-15 after routins SPRITE_PTR1  is set to addrss
+
+; accu has to contain contain 0-15 
+; After routine SPRITE_PTR1  is set to address
 ; of corresponding sprite block
 callSetSpritePointer
     asl
@@ -119,13 +112,8 @@ SPR_DATA_ADDR
 .word 14 * 1024
 
 ; SPRITE_PTR1 is set to correct block
-; accu contains value on playfield
+; accu has to contain the sprite number 1-15, i.e. the value on the playing field
 setBitmapAddr    
-    cmp #0
-    bne _changeAddr
-    jsr off
-    rts
-_changeAddr
     phx
     phy    
     dea
@@ -161,57 +149,5 @@ YPOSITIONS
 .word Y_OFFSET + 2 * (32 + 4)
 .word Y_OFFSET + 3 * (32 + 4)
 
-XCOUNT .byte 0
-YCOUNT .byte 0
-SCOUNT .byte 0
-
-setPositions
-    stz XCOUNT
-    stz YCOUNT
-    stz SCOUNT
-    phy
-    phx
-
-_sprLoop
-    lda SCOUNT
-    jsr callSetSpritePointer
-
-    lda XCOUNT
-    asl
-    tax
-    ldy #SpriteBlock_t.xpos
-    lda XPOSITIONS, x
-    sta (SPRITE_PTR1), y
-    inx
-    iny
-    lda XPOSITIONS, x
-    sta (SPRITE_PTR1), y
-    
-    lda YCOUNT
-    asl
-    tax
-    ldy #SpriteBlock_t.ypos
-    lda YPOSITIONS, x
-    sta (SPRITE_PTR1), y
-    inx
-    iny
-    lda YPOSITIONS, x
-    sta (SPRITE_PTR1), y
-
-    inc SCOUNT
-
-    inc XCOUNT
-    lda XCOUNT
-    cmp #4
-    bne _sprLoop
-
-    stz XCOUNT
-    inc YCOUNT
-    lda YCOUNT
-    cmp #4
-    bne _sprLoop
-    plx
-    ply
-    rts
 
 .endnamespace

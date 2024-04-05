@@ -6,8 +6,8 @@ jmp main
 
 KEY_F1 = 129
 KEY_F3 = 131
-KEY_F5 = 133
-KEY_UNDO = 117
+;KEY_F5 = 133
+;KEY_UNDO = 117
 GLOBAL_COL = $10
 
 HEX_CHARS
@@ -20,17 +20,12 @@ HEX_CHARS
 .include "txtio.asm"
 .include "rtc.asm"
 .include "beep.asm"
-;.include "snes_pad.asm"
 .include "random.asm"
 .include "spritecontrol.asm"
-;.include "playfield.asm"
-;.include "undo.asm"
-;.include "bigchar.asm"
-;.include "diskio.asm"
+.include "playfield.asm"
 .include "states.asm"
 .include "state_start.asm"
 .include "state_game.asm"
-;.include "state_help.asm"
 
 S_START .dstruct GameState_t, st_start.eventLoop, st_start.enterState, st_start.leaveState, st_start.ST_START_DATA
 S_GAME  .dstruct GameState_t, st_15puzzle.eventLoop, st_15puzzle.enterState, st_15puzzle.leaveState, st_15puzzle.ST_15_PUZZLE_DATA 

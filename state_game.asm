@@ -9,7 +9,7 @@ State15Puzzle_t .struct
 ST_15_PUZZLE_DATA .dstruct State15Puzzle_t
 
 
-MSG_GAME_START_1 .text "15 puzzle game state"
+MSG_GAME_START_1 .text "15 puzzle game state", $0d
 
 
 enterState
@@ -21,13 +21,9 @@ enterState
     stz $D00E
     stz $D00F
 
-    lda GLOBAL_STATE.globalCol
-    sta CURSOR_STATE.col
-    #locate 9, 35
-    #printString MSG_GAME_START_1, len(MSG_GAME_START_1)
-    rts
-
-    ;jsr sprites.init
+    jsr txtio.newLine
+    jsr playfield.init
+    jsr playfield.draw
     rts
 
 eventLoop
@@ -127,12 +123,38 @@ _done
     rts
 
 
+MSG_UP .text "up", $0d
+MSG_DOWN .text "down", $0d
+MSG_LEFT .text "left", $0d
+MSG_RIGHT .text "right", $0d
+
 ; x-reg = 0 => Shift Up
 ; x-reg = 2 => Shift Down
 ; x-reg = 4 => Shift Left
 ; x-reg = 6 => Shift Right
 performOperation
+    cpx #0
+    bne _checkDown
+    #printString MSG_UP, len(MSG_UP)
     rts
+_checkDown
+    cpx #2
+    bne _checkLeft
+    #printString MSG_DOWN, len(MSG_DOWN)
+    rts
+_checkLeft
+    cpx #4
+    bne _checkRight
+    #printString MSG_LEFT, len(MSG_LEFT)
+    rts
+_checkRight
+    cpx #6
+    bne _ignore
+    #printString MSG_RIGHT, len(MSG_RIGHT)
+    rts
+_ignore
+    rts
+
 
 leaveState
     jsr sprites.deactivate

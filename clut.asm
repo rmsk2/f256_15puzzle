@@ -63,38 +63,38 @@ setGfxCol .macro colNum, red, green, blue, alpha
 init
     #saveIo
 
-    #setIo 1
-    #setGfxColInt 1,  $E0, $01, $01, $FF
-    #setGfxColInt 2,  $FF, $79, $01, $FF
-    #setGfxColInt 3,  $FF, $E4, $01, $FF
-    #setGfxColInt 4,  $A6, $FF, $01, $FF
-    #setGfxColInt 5,  $01, $FF, $E4, $FF
-    #setGfxColInt 6,  $01, $9D, $FF, $FF
-    #setGfxColInt 7,  $05, $01, $FF, $FF
-    #setGfxColInt 8,  $8B, $01, $FF, $FF
-    #setGfxColInt 9,  $FF, $01, $F6, $FF
-    #setGfxColInt 10, $FF, $01, $79, $FF
-    #setGfxColInt 11, $FF, $FF, $FF, $FF
-    #setGfxColInt 12, $ED, $FF, $01, $FF
-    #setGfxColInt 13, $01, $FF, $C1, $FF
+    ; #setIo 1
+    ; #setGfxColInt 1,  $E0, $01, $01, $FF
+    ; #setGfxColInt 2,  $FF, $79, $01, $FF
+    ; #setGfxColInt 3,  $FF, $E4, $01, $FF
+    ; #setGfxColInt 4,  $A6, $FF, $01, $FF
+    ; #setGfxColInt 5,  $01, $FF, $E4, $FF
+    ; #setGfxColInt 6,  $01, $9D, $FF, $FF
+    ; #setGfxColInt 7,  $05, $01, $FF, $FF
+    ; #setGfxColInt 8,  $8B, $01, $FF, $FF
+    ; #setGfxColInt 9,  $FF, $01, $F6, $FF
+    ; #setGfxColInt 10, $FF, $01, $79, $FF
+    ; #setGfxColInt 11, $FF, $FF, $FF, $FF
+    ; #setGfxColInt 12, $ED, $FF, $01, $FF
+    ; #setGfxColInt 13, $01, $FF, $C1, $FF
     
-    #setIo 0
-    #setTxtColInt 0,  $00, $00, $00, $FF
-    #setTxtColInt 1,  $FF, $FF, $FF, $FF
-    #setTxtColInt 2,  $00, $DF, $00, $FF
-    #setTxtColInt 3,  $00, $CF, $00, $FF
-    #setTxtColInt 4,  $00, $BF, $00, $FF
-    #setTxtColInt 5,  $00, $AF, $00, $FF
-    #setTxtColInt 6,  $00, $9F, $00, $FF
-    #setTxtColInt 7,  $00, $8F, $00, $FF
-    #setTxtColInt 8,  $00, $7F, $00, $FF
-    #setTxtColInt 9,  $00, $6F, $00, $FF
-    #setTxtColInt 10, $00, $5F, $00, $FF
-    #setTxtColInt 11, $00, $4F, $00, $FF
-    #setTxtColInt 12, $00, $3F, $00, $FF
-    #setTxtColInt 13, $00, $2F, $00, $FF
-    #setTxtColInt 14, $00, $1F, $00, $FF
-    #setTxtColInt 15, $00, $0F, $00, $FF
+    ; #setIo 0
+    ; #setTxtColInt 0,  $00, $00, $00, $FF
+    ; #setTxtColInt 1,  $FF, $FF, $FF, $FF
+    ; #setTxtColInt 2,  $00, $DF, $00, $FF
+    ; #setTxtColInt 3,  $00, $CF, $00, $FF
+    ; #setTxtColInt 4,  $00, $BF, $00, $FF
+    ; #setTxtColInt 5,  $00, $AF, $00, $FF
+    ; #setTxtColInt 6,  $00, $9F, $00, $FF
+    ; #setTxtColInt 7,  $00, $8F, $00, $FF
+    ; #setTxtColInt 8,  $00, $7F, $00, $FF
+    ; #setTxtColInt 9,  $00, $6F, $00, $FF
+    ; #setTxtColInt 10, $00, $5F, $00, $FF
+    ; #setTxtColInt 11, $00, $4F, $00, $FF
+    ; #setTxtColInt 12, $00, $3F, $00, $FF
+    ; #setTxtColInt 13, $00, $2F, $00, $FF
+    ; #setTxtColInt 14, $00, $1F, $00, $FF
+    ; #setTxtColInt 15, $00, $0F, $00, $FF
     
     #restoreIo
     rts
