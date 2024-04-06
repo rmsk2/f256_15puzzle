@@ -196,7 +196,7 @@ _noSprite
 
     rts
 
-setPlayFieldPtr
+setMovePatternPtr
     #load16BitImmediate MOVE_PATTERNS, PLAYFIELD_PTR1 
     lda PLAY_FIELD.offsetEmpty
     asl
@@ -252,6 +252,7 @@ TRANS_RANDOM
 RAND_COUNT .byte ?
 RAND_COUNT_HIGH .byte ?
 
+
 shuffle
     stz RAND_COUNT
     stz RAND_COUNT_HIGH
@@ -270,19 +271,21 @@ _randLoop
     bne _randLoop
     rts
 
-
 ; x contains move selected by the user
 makeMoveInternal
-    jsr setPlayFieldPtr
+    jsr setMovePatternPtr
     txa
     ldy #MoveOffsets_t.moves
-    and (PLAYFIELD_PTR1 ), y
+    and (PLAYFIELD_PTR1), y
     beq _doneIllegal
+    stx sprites.ANIMATE_TASK.direction
     jsr bitFlagToOffset
     sty SCRATCH    
     lda (PLAYFIELD_PTR1), y                                                 ; determine offset which moves
     tay
-    lda PLAY_FIELD.playField, y                                             ; load current value at move pos
+    sty sprites.ANIMATE_TASK.playfieldOffset
+    lda PLAY_FIELD.playField, y                                             ; load current value at move pos    
+    sta sprites.ANIMATE_TASK.spriteId
     ldy PLAY_FIELD.offsetEmpty                                              ; load offset of current empty pos
     sta PLAY_FIELD.playField, y                                             ; store value mfrom move pos
 
@@ -292,6 +295,10 @@ makeMoveInternal
     lda #0
     sta PLAY_FIELD.playfield, y                                             ; make this field empty
     sty PLAY_FIELD.offsetEmpty                                              ; offset in y is the empty offset
+    lda sprites.ANIMATE_TASK.playfieldOffset
+    jsr calcPlayFieldCoordinates
+    stx sprites.ANIMATE_TASK.currentX
+    sty sprites.ANIMATE_TASK.currentY
     clc
     rts
 _doneIllegal

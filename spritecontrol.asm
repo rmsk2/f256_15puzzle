@@ -204,4 +204,37 @@ setPosition
     plx
     rts
 
+; x and y have to contain the coordinates on the playing field
+playFieldToScreenCoord
+    rts
+
+Animate_t .struct
+    spriteId        .word ?
+    direction       .byte ?
+    playfieldOffset .byte ?
+    currentX        .byte ?
+    currentY        .byte ?
+.endstruct
+
+ANIMATE_TASK .dstruct Animate_t
+
+SpritePos_t .struct
+    x  .word ?
+    y  .word ?
+.endstruct
+
+ANIM_HELPER_START .dstruct SpritePos_t
+ANIM_HELPER_END   .dstruct SpritePos_t
+
+animate
+    lda ANIMATE_TASK.spriteId
+    dea
+    jsr callSetSpritePointer
+    
+    ldx ANIMATE_TASK.currentX
+    ldy ANIMATE_TASK.currentY
+    jsr playFieldToScreenCoord
+
+    rts
+
 .endnamespace
