@@ -204,37 +204,98 @@ setPosition
     plx
     rts
 
-; x and y have to contain the coordinates on the playing field
-playFieldToScreenCoord
-    rts
 
 Animate_t .struct
     spriteId        .word ?
     direction       .byte ?
     playfieldOffset .byte ?
+    emptyOffset     .byte ?
     currentX        .byte ?
     currentY        .byte ?
+    targetX         .byte ?
+    targetY         .byte ?
 .endstruct
 
 ANIMATE_TASK .dstruct Animate_t
+ANIM_HELPER_START .dstruct SpriteBlock_t
+ANIM_HELPER_END   .dstruct SpriteBlock_t
 
-SpritePos_t .struct
-    x  .word ?
-    y  .word ?
-.endstruct
-
-ANIM_HELPER_START .dstruct SpritePos_t
-ANIM_HELPER_END   .dstruct SpritePos_t
-
-animate
+moveSprite
     lda ANIMATE_TASK.spriteId
     dea
     jsr callSetSpritePointer
-    
+
+    ; set X position
+    ldy #SpriteBlock_t.xpos
+    lda ANIM_HELPER_START.xpos    
+    sta (SPRITE_PTR1), y
+    iny
+    lda ANIM_HELPER_START.xpos+1
+    sta (SPRITE_PTR1), y
+
+    ; set Y position
+    ldy #SpriteBlock_t.ypos
+    lda ANIM_HELPER_START.ypos
+    sta (SPRITE_PTR1), y
+    iny
+    lda ANIM_HELPER_START.ypos+1
+    sta (SPRITE_PTR1), y
+
+    rts
+
+
+X_DONE .byte ?
+Y_DONE .byte ?
+
+animate
+    stz X_DONE
+    stz Y_DONE
+    #load16BitImmediate ANIM_HELPER_START, SPRITE_PTR1    
     ldx ANIMATE_TASK.currentX
     ldy ANIMATE_TASK.currentY
-    jsr playFieldToScreenCoord
+    jsr setPosition
 
+    #load16BitImmediate ANIM_HELPER_END, SPRITE_PTR1    
+    ldx ANIMATE_TASK.targetX
+    ldy ANIMATE_TASK.targetY
+    jsr setPosition
+_doAnimate
+    ;jsr waitForKey
+    #cmp16Bit ANIM_HELPER_START.xpos, ANIM_HELPER_END.xpos
+    beq _xDone
+    lda ANIMATE_TASK.direction
+    and #MOVE_LEFT
+    bne _decXPos
+    #inc16Bit ANIM_HELPER_START.xpos
+    bra _moveX
+_decXPos
+    #dec16Bit ANIM_HELPER_START.xpos    
+_moveX
+    jsr moveSprite
+    bra _checkY
+_xDone
+    inc X_DONE
+_checkY
+    #cmp16Bit ANIM_HELPER_START.ypos, ANIM_HELPER_END.ypos
+    beq _yDone
+    lda ANIMATE_TASK.direction
+    and #MOVE_UP
+    bne _decYPos
+    #inc16Bit ANIM_HELPER_START.ypos
+    bra _moveY
+_decYPos
+    #dec16Bit ANIM_HELPER_START.ypos        
+_moveY
+    jsr moveSprite
+    bra _testDone
+_yDone
+    inc Y_DONE
+_testDone
+    lda X_DONE
+    and Y_DONE
+    bne _animDone
+    jmp _doAnimate
+_animDone
     rts
 
 .endnamespace

@@ -236,7 +236,8 @@ POS_15 .dstruct MoveOffsets_t, NOT_POSSIBLE, 11, NOT_POSSIBLE, 14, MOVE_DOWN | M
 makeMove
     jsr makeMoveInternal
     bcs _doneIllegal
-    jsr draw
+    ;jsr draw
+    jsr sprites.animate
     rts
 _doneIllegal
     jsr sid.beepIllegal
@@ -287,6 +288,7 @@ makeMoveInternal
     lda PLAY_FIELD.playField, y                                             ; load current value at move pos    
     sta sprites.ANIMATE_TASK.spriteId
     ldy PLAY_FIELD.offsetEmpty                                              ; load offset of current empty pos
+    sty sprites.ANIMATE_TASK.emptyOffset
     sta PLAY_FIELD.playField, y                                             ; store value mfrom move pos
 
     ldy SCRATCH
@@ -295,10 +297,19 @@ makeMoveInternal
     lda #0
     sta PLAY_FIELD.playfield, y                                             ; make this field empty
     sty PLAY_FIELD.offsetEmpty                                              ; offset in y is the empty offset
+
+    ; calculate x and y coordinates of block to move
     lda sprites.ANIMATE_TASK.playfieldOffset
     jsr calcPlayFieldCoordinates
     stx sprites.ANIMATE_TASK.currentX
     sty sprites.ANIMATE_TASK.currentY
+
+    ; calculate x and y coordinate of where to move block
+    lda sprites.ANIMATE_TASK.emptyOffset
+    jsr calcPlayFieldCoordinates    
+    stx sprites.ANIMATE_TASK.targetX
+    sty sprites.ANIMATE_TASK.targetY
+
     clc
     rts
 _doneIllegal
