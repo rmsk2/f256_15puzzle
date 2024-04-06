@@ -65,19 +65,27 @@ deactivate
 
 
 init
+    ; turn off all sprites
+    #load16BitImmediate $D900, SPRITE_PTR1
+    ldx #0
+_turnOfLoop
+    lda #0
+    sta (SPRITE_PTR1)
+    #add16BitImmediate 8, SPRITE_PTR1
+    inx
+    cpx #64
+    bne _turnOfLoop
+
     ; set bitmap data for all sprites
     ldy #0                                              ; sprite block  0..14
-    ldx #1                                              ; sprite number 1..15
 _sprLoop
     tya
     jsr callSetSpritePointer
-    txa
+    tya
     jsr setBitmapAddr
-    inx
     iny
     cpy #15
     bne _sprLoop
-
     ; Activate sprite layer
     jsr activate
     rts
@@ -125,11 +133,10 @@ SPR_DATA_ADDR
 .word 14 * 1024
 
 ; SPRITE_PTR1 has to be set to correct block
-; accu has to contain the sprite number 1-15, i.e. the value on the playing field
+; accu contains the the number of the 1K address block where sprite data lives
 setBitmapAddr    
     phx
     phy    
-    dea
     asl
     tax
     ldy #SpriteBlock_t.addr
@@ -142,7 +149,6 @@ setBitmapAddr
     iny
     lda #2
     sta (SPRITE_PTR1), y
-    jsr on
     ply
     plx
     rts
@@ -163,5 +169,38 @@ YPOSITIONS
 .word Y_OFFSET + 2 * (32 + 4)
 .word Y_OFFSET + 3 * (32 + 4)
 
+
+COORD_Y .byte ?
+; SPRITE_PTR1 has to be set to correct block
+; x and y have to contain the coordinates on the playing field
+setPosition
+    phx
+    phy        
+    sty COORD_Y
+    ; set xpos
+    txa
+    asl
+    tax
+    lda XPOSITIONS, x
+    ldy #SpriteBlock_t.xpos
+    sta (SPRITE_PTR1), y
+    inx
+    iny
+    lda XPOSITIONS, x
+    sta (SPRITE_PTR1), y
+    ; set ypos
+    lda COORD_Y
+    asl
+    tax
+    ldy #SpriteBlock_t.ypos   
+    lda YPOSITIONS, x
+    sta (SPRITE_PTR1), y
+    inx
+    iny
+    lda YPOSITIONS, x
+    sta (SPRITE_PTR1), y
+    ply
+    plx
+    rts
 
 .endnamespace

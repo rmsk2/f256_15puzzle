@@ -504,6 +504,8 @@ PRBYTE .dstruct prByteState_t
 ; This routine does not return a value.
 ; --------------------------------------------------
 printByte
+    pha
+    phy
     sta PRBYTE.temp_char
     and #$F0
     lsr
@@ -518,6 +520,8 @@ printByte
     tay
     lda PRBYTE.hex_chars, y
     jsr charOut
+    ply
+    pla
     rts
 
 ; --------------------------------------------------

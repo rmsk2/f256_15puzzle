@@ -48,11 +48,13 @@ _keyPress
     lda myEvent.key.flags 
     and #myEvent.key.META
     beq _checkAscii
-    lda myEvent.key.ascii
+    lda myEvent.key.raw
     jsr testForFKey
     bcc eventLoop
+    bra _compare
 _checkAscii
     lda myEvent.key.ascii
+_compare
     cmp #KEY_F1
     bne _testCursorUp
     #setstate S_START

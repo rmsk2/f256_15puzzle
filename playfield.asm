@@ -97,6 +97,8 @@ calcPlayFieldOffsetTransposed
 
     rts
 
+COUNT_X .byte ?
+COUNT_Y .byte ?
 draw
     lda #18
     sta RECT_PARAMS.xpos
@@ -111,6 +113,31 @@ draw
     lda GLOBAL_STATE.globalCol
     sta RECT_PARAMS.col
     jsr txtrect.drawRect
+
+    stz COUNT_X
+    stz COUNT_Y
+_placeSprite
+    ldx COUNT_X
+    lda COUNT_Y
+    jsr calcPlayFieldOffset
+    lda PLAY_FIELD.playField, Y
+    beq _noSprite
+    dea
+    jsr sprites.callSetSpritePointer
+    ldx COUNT_X
+    ldy COUNT_Y
+    jsr sprites.setPosition
+    jsr sprites.on
+_noSprite
+    inc COUNT_X
+    lda COUNT_X
+    cmp #4
+    bne _placeSprite
+    stz COUNT_X
+    inc COUNT_Y
+    lda COUNT_Y
+    cmp #4
+    bne _placeSprite
 
     rts
 
