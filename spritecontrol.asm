@@ -115,6 +115,7 @@ off
     rts    
 
 
+; lower 16 bits of addresses for the sprite data
 SPR_DATA_ADDR
 .word 0
 .word 1 * 1024

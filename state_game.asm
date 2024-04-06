@@ -62,19 +62,19 @@ _compare
 _testCursorUp
     cmp #16
     bne _testCursorDown
-    ldx #0
+    ldx #MOVE_UP
     jsr performOperation
     bra eventLoop
 _testCursorDown
     cmp #14
     bne _testCursorLeft
-    ldx #2
+    ldx #MOVE_DOWN
     jsr performOperation
     bra eventLoop
 _testCursorLeft
     cmp #2
     bne _testCursorRight
-    ldx #4
+    ldx #MOVE_LEFT
     jsr performOperation
     jmp eventLoop
 _testCursorRight
@@ -82,7 +82,7 @@ _testCursorRight
     beq _shiftRight
     jmp eventLoop
 _shiftRight
-    ldx #6
+    ldx #MOVE_RIGHT
     jsr performOperation
     jmp eventLoop
 _timerEvent
@@ -101,25 +101,25 @@ testJoyStick
     lda myEvent.joystick.joy0
     cmp #1    
     bne _checkDown
-    ldx #0
+    ldx #MOVE_UP
     jsr performOperation
     bra _done    
 _checkDown
     cmp #2
     bne _checkLeft
-    ldx #2
+    ldx #MOVE_DOWN
     jsr performOperation
     bra _done
 _checkLeft
     cmp #4
     bne _checkRight
-    ldx #4
+    ldx #MOVE_LEFT
     jsr performOperation
     bra _done
 _checkRight
     cmp #8
     bne _done
-    ldx #6
+    ldx #MOVE_RIGHT
     jsr performOperation
 _done    
     rts
@@ -130,29 +130,29 @@ MSG_DOWN .text "down", $0d
 MSG_LEFT .text "left", $0d
 MSG_RIGHT .text "right", $0d
 
-; x-reg = 0 => Shift Up
-; x-reg = 2 => Shift Down
-; x-reg = 4 => Shift Left
-; x-reg = 6 => Shift Right
+; x-reg = MOVE_UP    => Shift Up
+; x-reg = MOVE_DOWN  => Shift Down
+; x-reg = MOVE_LEFT  => Shift Left
+; x-reg = MOVE_RIGHT => Shift Right
 performOperation
-    cpx #0
-    bne _checkDown
-    #printString MSG_UP, len(MSG_UP)
+    cpx #MOVE_UP
+    bne _checkDown    
+    jsr playField.makeMove
     rts
 _checkDown
-    cpx #2
+    cpx #MOVE_DOWN
     bne _checkLeft
-    #printString MSG_DOWN, len(MSG_DOWN)
+    jsr playField.makeMove
     rts
 _checkLeft
-    cpx #4
-    bne _checkRight
-    #printString MSG_LEFT, len(MSG_LEFT)
+    cpx #MOVE_LEFT
+    bne _checkRight    
+    jsr playField.makeMove
     rts
 _checkRight
-    cpx #6
-    bne _ignore
-    #printString MSG_RIGHT, len(MSG_RIGHT)
+    cpx #MOVE_RIGHT
+    bne _ignore    
+    jsr playField.makeMove
     rts
 _ignore
     rts

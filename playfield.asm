@@ -1,15 +1,37 @@
 
 PlayField_t .struct 
-    playField .fill 16
-.ends
+    playField   .fill 16
+    offsetEmpty .byte 0
+.endstruct
 
+
+MOVE_UP    = %00000001
+MOVE_DOWN  = %00000010
+MOVE_LEFT  = %00000100
+MOVE_RIGHT = %00001000
+MOVE_ALL   = %00001111 
+NOT_POSSIBLE = $FF
+
+
+MoveOffsets_t .struct u, d, l, r, m
+    up    .byte \u
+    down  .byte \d
+    left  .byte \l
+    right .byte \r
+    moves .byte \m
+    pad   .fill 3
+.endstruct
 
 playfield .namespace
 
 PLAY_FIELD .dstruct PlayField_t
 
+; initialize playfield
 init
     jsr setDefined
+    lda #15
+    sta PLAY_FIELD.offsetEmpty
+    
     jsr sprites.init
     rts
 
@@ -25,8 +47,9 @@ _loop
     bne _loop
     rts
 
-INIT_VALUES .byte 1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,0
 
+INIT_VALUES .byte 1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,0
+; set all values in playing field to the values given above
 setDefined
     ldx #0
 _loop
@@ -76,6 +99,34 @@ calcPlayFieldOffset
     rts
 
 
+; offset in Accu
+; coordinates are returned in y and y
+calcPlayFieldCoordinates
+    sta SCRATCH
+    and #%00000011
+    tax
+    lda SCRATCH
+    and #%00001100
+    lsr
+    lsr
+    tay
+    rts
+
+
+; bitflag in x
+; offest returned in y
+bitFlagToOffset
+    ldy #0
+    clc
+    txa
+_testLoop    
+    lsr
+    bcs _done
+    iny
+    bra _testLoop
+_done
+    rts
+
 ;--------------------------------------------------
 ; calcPlayFieldOffsetTransposed calculates the offset of the position y,x 
 ; 
@@ -99,7 +150,9 @@ calcPlayFieldOffsetTransposed
 
 COUNT_X .byte ?
 COUNT_Y .byte ?
+; Draw playing field as a whole
 draw
+    ; "draw" border arounf playing field
     lda #18
     sta RECT_PARAMS.xpos
     lda #9
@@ -114,6 +167,7 @@ draw
     sta RECT_PARAMS.col
     jsr txtrect.drawRect
 
+    ; position sprites
     stz COUNT_X
     stz COUNT_Y
 _placeSprite
@@ -139,6 +193,70 @@ _noSprite
     cmp #4
     bne _placeSprite
 
+    rts
+
+setPlayFieldPtr
+    #load16BitImmediate MOVE_PATTERNS, PLAYFIELD_PTR1 
+    lda PLAY_FIELD.offsetEmpty
+    asl
+    asl
+    asl
+    clc
+    adc PLAYFIELD_PTR1
+    sta PLAYFIELD_PTR1
+    ; handle carry
+    lda PLAYFIELD_PTR1+1
+    adc #0
+    sta PLAYFIELD_PTR1+1
+    rts
+
+MOVE_PATTERNS ; UP, DOWN, LEFT, RIGHT
+POS_0  .dstruct MoveOffsets_t, 4, NOT_POSSIBLE, 1, NOT_POSSIBLE, MOVE_UP | MOVE_LEFT
+POS_1  .dstruct MoveOffsets_t, 5, NOT_POSSIBLE, 2, 0, MOVE_UP | MOVE_LEFT | MOVE_RIGHT
+POS_2  .dstruct MoveOffsets_t, 6, NOT_POSSIBLE, 3, 1, MOVE_UP | MOVE_LEFT | MOVE_RIGHT
+POS_3  .dstruct MoveOffsets_t, 7, NOT_POSSIBLE, NOT_POSSIBLE, 2, MOVE_UP | MOVE_RIGHT
+
+POS_4  .dstruct MoveOffsets_t, 8, 0, 5, NOT_POSSIBLE, MOVE_UP | MOVE_DOWN | MOVE_LEFT
+POS_5  .dstruct MoveOffsets_t, 9, 1, 6, 4, MOVE_ALL
+POS_6  .dstruct MoveOffsets_t, 10,2, 7, 5, MOVE_ALL
+POS_7  .dstruct MoveOffsets_t, 11,3, NOT_POSSIBLE, 6, MOVE_UP | MOVE_DOWN | MOVE_RIGHT
+
+POS_8  .dstruct MoveOffsets_t, 12, 4, 9, NOT_POSSIBLE, MOVE_UP | MOVE_DOWN | MOVE_LEFT
+POS_9  .dstruct MoveOffsets_t, 13, 5, 10, 8, MOVE_ALL
+POS_10 .dstruct MoveOffsets_t, 14, 6, 11, 9, MOVE_ALL
+POS_11 .dstruct MoveOffsets_t, 15, 7, NOT_POSSIBLE, 10, MOVE_UP | MOVE_DOWN | MOVE_RIGHT
+
+POS_12 .dstruct MoveOffsets_t, NOT_POSSIBLE, 8, 13, NOT_POSSIBLE, MOVE_DOWN | MOVE_LEFT
+POS_13 .dstruct MoveOffsets_t, NOT_POSSIBLE, 9, 14, 12, MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
+POS_14 .dstruct MoveOffsets_t, NOT_POSSIBLE, 10, 15, 13, MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
+POS_15 .dstruct MoveOffsets_t, NOT_POSSIBLE, 11, NOT_POSSIBLE, 14, MOVE_DOWN | MOVE_RIGHT
+
+; x contains move selected by the user
+makeMove
+    jsr setPlayFieldPtr
+    txa
+    ldy #MoveOffsets_t.moves
+    and (PLAYFIELD_PTR1 ), y
+    beq _doneIllegal
+    jsr bitFlagToOffset
+    sty SCRATCH    
+    lda (PLAYFIELD_PTR1), y                                                 ; determine offet which moves
+    tay
+    lda PLAY_FIELD.playField, y                                             ; load current value at move pos
+    ldy PLAY_FIELD.offsetEmpty                                              ; load offset of current empty pos
+    sta PLAY_FIELD.playField, y                                             ; store value mfrom move pos
+
+    ldy SCRATCH
+    lda (PLAYFIELD_PTR1), y                                                 ; recreate offset that moves
+    tay
+    lda #0
+    sta PLAY_FIELD.playfield, y                                             ; make this field empty
+    sty PLAY_FIELD.offsetEmpty                                              ; offset in y is the empty offset
+    jsr draw
+    rts
+_doneIllegal
+    jsr sid.beepIllegal
+    jsr sid.beepOff
     rts
 
 .endnamespace
