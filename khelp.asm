@@ -144,7 +144,7 @@ sys64738
     sta $D6A0
     rts
 
-TIMER_COOKIE_START .byte 0
+TIMER_COOKIE_ANIMATION .byte 0
 TIMER_COOKIE_GAME .byte 1
 TIMER_COOKIE_DELAY .byte 2
 
@@ -165,8 +165,8 @@ setTimerHelp .macro type, interval, cookieSrc
     jsr kernel.Clock.SetTimer
 .endmacro
 
-setTimerStartScreen 
-    #setTimerHelp kernel.args.timer.FRAMES, 30, TIMER_COOKIE_START
+setTimerAnimation 
+    #setTimerHelp kernel.args.timer.FRAMES, 1, TIMER_COOKIE_ANIMATION
     rts
 
 setTimerClockTick

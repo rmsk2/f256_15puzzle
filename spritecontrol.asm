@@ -259,8 +259,34 @@ animate
     ldx ANIMATE_TASK.targetX
     ldy ANIMATE_TASK.targetY
     jsr setPosition
-_doAnimate
-    ;jsr waitForKey
+    jsr setTimerAnimation 
+_eventLoop
+    ; Peek at the queue to see if anything is pending
+    lda kernel.args.events.pending ; Negated count
+    bpl _eventLoop
+    ; Get the next event.
+    jsr kernel.NextEvent
+    bcs _eventLoop
+    ; Handle the event
+    lda myEvent.type    
+    cmp #kernel.event.timer.EXPIRED
+    beq _timerEvent
+    bra _eventLoop
+_timerEvent
+    lda myEvent.timer.cookie
+    cmp TIMER_COOKIE_ANIMATION
+    beq _cookieMatches
+    jmp _eventLoop
+_cookieMatches
+    jsr performAnimationStep
+    bcc _done
+    jsr setTimerAnimation
+    bra _eventLoop
+_done
+    rts
+
+
+performAnimationStep
     #cmp16Bit ANIM_HELPER_START.xpos, ANIM_HELPER_END.xpos
     beq _xDone
     lda ANIMATE_TASK.direction
@@ -294,8 +320,10 @@ _testDone
     lda X_DONE
     and Y_DONE
     bne _animDone
-    jmp _doAnimate
+    sec
+    rts
 _animDone
+    clc
     rts
 
 .endnamespace
