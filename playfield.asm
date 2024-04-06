@@ -32,6 +32,7 @@ init
     lda #15
     sta PLAY_FIELD.offsetEmpty
     
+    jsr shuffle
     jsr sprites.init
     rts
 
@@ -210,6 +211,7 @@ setPlayFieldPtr
     sta PLAYFIELD_PTR1+1
     rts
 
+
 MOVE_PATTERNS ; UP, DOWN, LEFT, RIGHT
 POS_0  .dstruct MoveOffsets_t, 4, NOT_POSSIBLE, 1, NOT_POSSIBLE, MOVE_UP | MOVE_LEFT
 POS_1  .dstruct MoveOffsets_t, 5, NOT_POSSIBLE, 2, 0, MOVE_UP | MOVE_LEFT | MOVE_RIGHT
@@ -231,8 +233,46 @@ POS_13 .dstruct MoveOffsets_t, NOT_POSSIBLE, 9, 14, 12, MOVE_DOWN | MOVE_LEFT | 
 POS_14 .dstruct MoveOffsets_t, NOT_POSSIBLE, 10, 15, 13, MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
 POS_15 .dstruct MoveOffsets_t, NOT_POSSIBLE, 11, NOT_POSSIBLE, 14, MOVE_DOWN | MOVE_RIGHT
 
-; x contains move selected by the user
 makeMove
+    jsr makeMoveInternal
+    bcs _doneIllegal
+    jsr draw
+    rts
+_doneIllegal
+    jsr sid.beepIllegal
+    jsr sid.beepOff
+    rts
+
+TRANS_RANDOM 
+.byte %00000001 
+.byte %00000010
+.byte %00000100
+.byte %00001000
+
+RAND_COUNT .byte ?
+RAND_COUNT_HIGH .byte ?
+
+shuffle
+    stz RAND_COUNT
+    stz RAND_COUNT_HIGH
+_randLoop
+    jsr random.getNibble
+    and #03
+    tay
+    ldx TRANS_RANDOM, y
+    jsr makeMoveInternal
+    inc RAND_COUNT
+    lda RAND_COUNT
+    bne _randLoop
+    inc RAND_COUNT_HIGH
+    lda RAND_COUNT_HIGH
+    cmp #3
+    bne _randLoop
+    rts
+
+
+; x contains move selected by the user
+makeMoveInternal
     jsr setPlayFieldPtr
     txa
     ldy #MoveOffsets_t.moves
@@ -240,7 +280,7 @@ makeMove
     beq _doneIllegal
     jsr bitFlagToOffset
     sty SCRATCH    
-    lda (PLAYFIELD_PTR1), y                                                 ; determine offet which moves
+    lda (PLAYFIELD_PTR1), y                                                 ; determine offset which moves
     tay
     lda PLAY_FIELD.playField, y                                             ; load current value at move pos
     ldy PLAY_FIELD.offsetEmpty                                              ; load offset of current empty pos
@@ -252,11 +292,10 @@ makeMove
     lda #0
     sta PLAY_FIELD.playfield, y                                             ; make this field empty
     sty PLAY_FIELD.offsetEmpty                                              ; offset in y is the empty offset
-    jsr draw
+    clc
     rts
 _doneIllegal
-    jsr sid.beepIllegal
-    jsr sid.beepOff
+    sec
     rts
 
 .endnamespace

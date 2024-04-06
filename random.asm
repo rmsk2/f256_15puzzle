@@ -42,7 +42,7 @@ init
 
     rts
 
-; get random 16 bit number in accu and x register
+; get nibbles of random 16 bit number in RAND_NIBBLES, ..., RAND_NIBBLES +  3
 get
     phx
     lda #1
@@ -59,6 +59,11 @@ _wait
     sta RAND_NIBBLES+2
     stx RAND_NIBBLES+3
     plx
+    rts
+
+getNibble
+    jsr get
+    lda RAND_NIBBLES
     rts
 
 .endnamespace
