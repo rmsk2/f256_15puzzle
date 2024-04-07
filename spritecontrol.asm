@@ -85,7 +85,7 @@ _turnOfLoop
     cpx #64
     bne _turnOfLoop
 
-    ; set bitmap data for all sprites
+    ; set bitmap data for all sprites representing tiles
     ldy #0                                              ; sprite block  0..14
 _sprLoop
     tya
@@ -96,8 +96,10 @@ _sprLoop
     cpy #15
     bne _sprLoop
 
+    ; initialize cursor keys icon
     lda #15
     jsr callSetSpritePointer
+    ; set data
     ldy #SpriteBlock_t.addr
     lda #<SPR_CURSOR
     sta (SPRITE_PTR1), y
@@ -108,6 +110,7 @@ _sprLoop
     lda #2
     sta (SPRITE_PTR1), y    
 
+    ; set xpos
     ldy #SpriteBlock_t.xpos
     lda #<CURSOR_POS_X
     sta (SPRITE_PTR1), y
@@ -115,6 +118,7 @@ _sprLoop
     lda #>CURSOR_POS_X
     sta (SPRITE_PTR1), y
 
+    ; set ypos
     ldy #SpriteBlock_t.ypos
     lda #<CURSOR_POS_Y
     sta (SPRITE_PTR1), y
@@ -122,10 +126,11 @@ _sprLoop
     lda #>CURSOR_POS_Y
     sta (SPRITE_PTR1), y
 
-
+    ; intialize joystick icon
     lda #16
     jsr callSetSpritePointer
     ldy #SpriteBlock_t.addr
+    ; set data
     lda #<SPR_JOYSTICK
     sta (SPRITE_PTR1), y
     iny
@@ -135,6 +140,7 @@ _sprLoop
     lda #2
     sta (SPRITE_PTR1), y
 
+    ; set xpos
     ldy #SpriteBlock_t.xpos
     lda #<JOYSTICK_POS_X
     sta (SPRITE_PTR1), y
@@ -142,6 +148,7 @@ _sprLoop
     lda #>JOYSTICK_POS_X
     sta (SPRITE_PTR1), y
 
+    ; set ypos
     ldy #SpriteBlock_t.ypos
     lda #<JOYSTICK_POS_Y
     sta (SPRITE_PTR1), y
