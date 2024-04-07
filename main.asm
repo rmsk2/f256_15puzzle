@@ -6,8 +6,6 @@ jmp main
 
 KEY_F1 = 129
 KEY_F3 = 131
-;KEY_F5 = 133
-;KEY_UNDO = 117
 GLOBAL_COL = $10
 
 HEX_CHARS

@@ -1,20 +1,23 @@
 * = $8000
 
-C1 = 17
-C2 = 55
-C3 = 17
-C4 = 55
-C5 = 17
-C6 = 55
-C7 = 17
-C8 = 55
-C9 = 17
-CA = 55
-CB = 17
-CC = 55
-CD = 17
-CE = 55
-CF = 17
+COL1 = 4
+COL2 = 5
+
+C1 = COL1
+C2 = COL2
+C3 = COL1
+C4 = COL2
+C5 = COL1
+C6 = COL2
+C7 = COL1
+C8 = COL2
+C9 = COL1
+CA = COL2
+CB = COL1
+CC = COL2
+CD = COL1
+CE = COL2
+CF = COL1
 
 SPR_1
 .include "1.asm"
