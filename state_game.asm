@@ -11,7 +11,7 @@ ST_15_PUZZLE_DATA .dstruct State15Puzzle_t
 
 MSG_GAME_1 .text "Press F1 to abort game and return to intro screen"
 MSG_GAME_3 .text "Press F3 to toggle tile animation"
-MSG_GAME_2 .text "Use cursor keys or joystick in port 1 to move tiles"
+MSG_GAME_2 .text "Use      keys or       in port 1 to move tiles"
 MSG_RESTORE_ORDER .text "Restore the original order of the tiles"
 
 enterState
@@ -28,6 +28,14 @@ enterState
     jsr playfield.shuffle
     jsr playfield.draw
 
+    lda #15
+    jsr sprites.callSetSpritePointer
+    jsr sprites.on16
+
+    lda #16
+    jsr sprites.callSetSpritePointer
+    jsr sprites.on16
+
     lda ST_15_PUZZLE_DATA.doAnimation
     sta playfield.PLAY_FIELD.doAnimation
 
@@ -38,7 +46,7 @@ enterState
     #printString MSG_GAME_1, len(MSG_GAME_1)
     #locate 20, 52
     #printString MSG_GAME_3, len(MSG_GAME_3)
-    #locate 12, 55
+    #locate 14, 55
     #printString MSG_GAME_2, len(MSG_GAME_2)
 
     rts
@@ -175,6 +183,15 @@ _ignore
 leaveState
     lda playfield.PLAY_FIELD.doAnimation
     sta ST_15_PUZZLE_DATA.doAnimation
+
+    lda #15
+    jsr sprites.callSetSpritePointer
+    jsr sprites.off16
+
+    lda #16
+    jsr sprites.callSetSpritePointer
+    jsr sprites.off16
+
     jsr sprites.deactivate
     rts
 

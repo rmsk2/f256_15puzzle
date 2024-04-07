@@ -18,6 +18,7 @@ CC = COL2
 CD = COL1
 CE = COL2
 CF = COL1
+D0 = 11
 
 SPR_1
 .include "1.asm"
@@ -63,3 +64,9 @@ SPR_14
 
 SPR_15
 .include "15.asm"
+
+SPR_CURSOR
+.include "cursor.asm"
+
+SPR_JOYSTICK
+.include "joystick.asm"

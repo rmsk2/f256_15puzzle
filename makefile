@@ -7,8 +7,8 @@ SPRBIN=sprdef.bin
 FORCE=-f
 
 
-SPRITES=1.xpm 2.xpm 3.xpm 4.xpm 5.xpm 6.xpm 7.xpm 8.xpm 9.xpm 10.xpm 11.xpm 12.xpm 13.xpm 14.xpm 15.xpm
-SPRASM=1.asm 2.asm 3.asm 4.asm 5.asm 6.asm 7.asm 8.asm 9.asm 10.asm 11.asm 12.asm 13.asm 14.asm 15.asm
+SPRITES=1.xpm 2.xpm 3.xpm 4.xpm 5.xpm 6.xpm 7.xpm 8.xpm 9.xpm 10.xpm 11.xpm 12.xpm 13.xpm 14.xpm 15.xpm cursor.xpm joystick.xpm
+SPRASM=1.asm 2.asm 3.asm 4.asm 5.asm 6.asm 7.asm 8.asm 9.asm 10.asm 11.asm 12.asm 13.asm 14.asm 15.asm cursor.asm joystick.asm
 
 all: pgz
 pgz: $(BINARY).pgz

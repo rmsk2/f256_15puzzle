@@ -17,6 +17,15 @@ SPR_LUT_3 = 2 | 4
 
 SPR_ENABLE = %00000001
 
+SPR_CURSOR = 15 * 1024
+SPR_JOYSTICK = 15 * 1024 + 256
+
+CURSOR_POS_X = 120-16
+CURSOR_POS_Y = 246
+
+JOYSTICK_POS_X = 174-16
+JOYSTICK_POS_Y = 247
+
 SpriteBlock_t .struct 
     control .byte ?
     addr .long ?
@@ -86,6 +95,60 @@ _sprLoop
     iny
     cpy #15
     bne _sprLoop
+
+    lda #15
+    jsr callSetSpritePointer
+    ldy #SpriteBlock_t.addr
+    lda #<SPR_CURSOR
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>SPR_CURSOR
+    sta (SPRITE_PTR1), y
+    iny
+    lda #2
+    sta (SPRITE_PTR1), y    
+
+    ldy #SpriteBlock_t.xpos
+    lda #<CURSOR_POS_X
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>CURSOR_POS_X
+    sta (SPRITE_PTR1), y
+
+    ldy #SpriteBlock_t.ypos
+    lda #<CURSOR_POS_Y
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>CURSOR_POS_Y
+    sta (SPRITE_PTR1), y
+
+
+    lda #16
+    jsr callSetSpritePointer
+    ldy #SpriteBlock_t.addr
+    lda #<SPR_JOYSTICK
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>SPR_JOYSTICK
+    sta (SPRITE_PTR1), y
+    iny
+    lda #2
+    sta (SPRITE_PTR1), y
+
+    ldy #SpriteBlock_t.xpos
+    lda #<JOYSTICK_POS_X
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>JOYSTICK_POS_X
+    sta (SPRITE_PTR1), y
+
+    ldy #SpriteBlock_t.ypos
+    lda #<JOYSTICK_POS_Y
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>JOYSTICK_POS_Y
+    sta (SPRITE_PTR1), y
+
     ; Activate sprite layer
     jsr activate
     rts
@@ -122,6 +185,16 @@ on
 ; SPRITE_PTR1 has to be set to correct block
 off
     #offWithSize SPR_SIZE_32
+    rts    
+
+; SPRITE_PTR1 has to be set to correct block
+on16
+    #onWithSize SPR_SIZE_16
+    rts
+
+; SPRITE_PTR1 has to be set to correct block
+off16
+    #offWithSize SPR_SIZE_16
     rts    
 
 
