@@ -58,6 +58,9 @@ main
     ; create a new event queue and save pointer to event queue of superbasic
     jsr initEvents
 
+    lda #DO_ANIMATE
+    sta st_15puzzle.ST_15_PUZZLE_DATA.doAnimation
+
     #setStartState S_START
 mainLoop
     jsr isStateEnd    

@@ -2,9 +2,11 @@
 PlayField_t .struct 
     playField   .fill 16
     offsetEmpty .byte 0
+    doAnimation .byte 0
 .endstruct
 
-
+DO_ANIMATE = 0
+DO_NOT_ANIMATE = 1
 MOVE_UP    = %00000001
 MOVE_DOWN  = %00000010
 MOVE_LEFT  = %00000100
@@ -28,6 +30,8 @@ PLAY_FIELD .dstruct PlayField_t
 
 ; initialize playfield
 init
+    lda #DO_ANIMATE
+    sta PLAY_FIELD.doAnimation
     jsr setDefined
     lda #15
     sta PLAY_FIELD.offsetEmpty
@@ -249,16 +253,21 @@ POS_13 .dstruct MoveOffsets_t, NOT_POSSIBLE, 9, 14, 12, MOVE_DOWN | MOVE_LEFT | 
 POS_14 .dstruct MoveOffsets_t, NOT_POSSIBLE, 10, 15, 13, MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
 POS_15 .dstruct MoveOffsets_t, NOT_POSSIBLE, 11, NOT_POSSIBLE, 14, MOVE_DOWN | MOVE_RIGHT
 
-MSG_ALL_IN_ORDER .text "All is in order. Well done!"
+MSG_ALL_IN_ORDER .text "      All is in order. Well done!      "
 
 makeMove
     jsr makeMoveInternal
     bcs _doneIllegal
-    ;jsr draw
+    lda PLAY_FIELD.doAnimation
+    beq _animate 
+    jsr draw
+    bra _checkEnd 
+_animate
     jsr sprites.animate
+_checkEnd
     jsr isOrdered
     bcs _done
-    #locate 24, 3
+    #locate 18, 2
     #printString MSG_ALL_IN_ORDER, len(MSG_ALL_IN_ORDER)
 _done
     rts

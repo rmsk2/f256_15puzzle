@@ -3,14 +3,16 @@
 st_15puzzle .namespace
 
 State15Puzzle_t .struct
-    tsStart .dstruct TimeStamp_t, 0, 0, 0
+    doAnimation .byte 0
 .ends
 
 ST_15_PUZZLE_DATA .dstruct State15Puzzle_t
 
 
 MSG_GAME_1 .text "Press F1 to abort game and return to intro screen"
+MSG_GAME_3 .text "Press F3 to toggle tile animation"
 MSG_GAME_2 .text "Use cursor keys or joystick in port 1 to move tiles"
+MSG_RESTORE_ORDER .text "Restore the original order of the tiles"
 
 enterState
     lda GLOBAL_STATE.globalCol
@@ -26,9 +28,17 @@ enterState
     jsr playfield.shuffle
     jsr playfield.draw
 
+    lda ST_15_PUZZLE_DATA.doAnimation
+    sta playfield.PLAY_FIELD.doAnimation
+
+    #locate 18, 2
+    #printString MSG_RESTORE_ORDER, len(MSG_RESTORE_ORDER)
+
     #locate 13, 49
     #printString MSG_GAME_1, len(MSG_GAME_1)
-    #locate 12, 52
+    #locate 20, 52
+    #printString MSG_GAME_3, len(MSG_GAME_3)
+    #locate 12, 55
     #printString MSG_GAME_2, len(MSG_GAME_2)
 
     rts
@@ -63,9 +73,16 @@ _checkAscii
     lda myEvent.key.ascii
 _compare
     cmp #KEY_F1
-    bne _testCursorUp
+    bne _testF3
     #setstate S_START
     bra _endEvent
+_testF3
+    cmp #KEY_F3
+    bne _testCursorUp
+    lda playfield.PLAY_FIELD.doAnimation
+    eor #1
+    sta playfield.PLAY_FIELD.doAnimation
+    bra eventLoop
 _testCursorUp
     cmp #16
     bne _testCursorDown
@@ -166,6 +183,8 @@ _ignore
 
 
 leaveState
+    lda playfield.PLAY_FIELD.doAnimation
+    sta ST_15_PUZZLE_DATA.doAnimation
     jsr sprites.deactivate
     rts
 
