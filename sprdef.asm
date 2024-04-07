@@ -70,3 +70,6 @@ SPR_CURSOR
 
 SPR_JOYSTICK
 .include "joystick.asm"
+
+SPR_OFF
+.include "off.asm"

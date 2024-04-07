@@ -38,6 +38,7 @@ enterState
 
     lda ST_15_PUZZLE_DATA.doAnimation
     sta playfield.PLAY_FIELD.doAnimation
+    jsr playfield.animationIconChange
 
     #locate 18, 2
     #printString MSG_RESTORE_ORDER, len(MSG_RESTORE_ORDER)
@@ -88,6 +89,7 @@ _testF3
     lda playfield.PLAY_FIELD.doAnimation
     eor #1
     sta playfield.PLAY_FIELD.doAnimation
+    jsr playfield.animationIconChange
     bra eventLoop
 _testCursorUp
     cmp #16

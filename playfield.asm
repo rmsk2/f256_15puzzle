@@ -99,6 +99,17 @@ _done
     rts
 
 
+animationIconChange
+    lda PLAY_FIELD.doAnimation
+    bne _turnOn
+    jsr sprites.offIconInvisible
+    rts
+_turnOn
+    jsr sprites.offIconShow
+    rts
+
+
+
 SCRATCH .byte $00
 ;--------------------------------------------------
 ; calcPlayFieldOffset calculates the offset of the position x,y 

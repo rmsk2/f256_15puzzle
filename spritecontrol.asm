@@ -19,12 +19,16 @@ SPR_ENABLE = %00000001
 
 SPR_CURSOR = 15 * 1024
 SPR_JOYSTICK = 15 * 1024 + 256
+OFF_ICON = SPR_JOYSTICK + 256
 
 CURSOR_POS_X = 120-16
 CURSOR_POS_Y = 246
 
 JOYSTICK_POS_X = 174-16
 JOYSTICK_POS_Y = 247
+
+OFF_POS_X = 222
+OFF_POS_Y = 238
 
 SpriteBlock_t .struct 
     control .byte ?
@@ -156,10 +160,53 @@ _sprLoop
     lda #>JOYSTICK_POS_Y
     sta (SPRITE_PTR1), y
 
+    ; intialize OFF icon
+    lda #17
+    jsr callSetSpritePointer
+    ldy #SpriteBlock_t.addr
+    ; set data
+    lda #<OFF_ICON
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>OFF_ICON
+    sta (SPRITE_PTR1), y
+    iny
+    lda #2
+    sta (SPRITE_PTR1), y
+
+    ; set xpos
+    ldy #SpriteBlock_t.xpos
+    lda #<OFF_POS_X
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>OFF_POS_X
+    sta (SPRITE_PTR1), y
+
+    ; set ypos
+    ldy #SpriteBlock_t.ypos
+    lda #<OFF_POS_Y
+    sta (SPRITE_PTR1), y
+    iny
+    lda #>OFF_POS_Y
+    sta (SPRITE_PTR1), y
+
+
+
     ; Activate sprite layer
     jsr activate
     rts
 
+offIconShow
+    lda #17
+    jsr callSetSpritePointer
+    jsr on8
+    rts
+
+offIconInvisible
+    lda #17
+    jsr callSetSpritePointer
+    jsr off8
+    rts
 
 ; accu has to contain contain 0-15 
 ; After routine SPRITE_PTR1  is set to address of corresponding sprite block
@@ -202,6 +249,16 @@ on16
 ; SPRITE_PTR1 has to be set to correct block
 off16
     #offWithSize SPR_SIZE_16
+    rts    
+
+; SPRITE_PTR1 has to be set to correct block
+on8
+    #onWithSize SPR_SIZE_8
+    rts
+
+; SPRITE_PTR1 has to be set to correct block
+off8
+    #offWithSize SPR_SIZE_8
     rts    
 
 
