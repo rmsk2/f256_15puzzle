@@ -54,8 +54,6 @@ eventLoop
     lda myEvent.type    
     cmp #kernel.event.key.PRESSED
     beq _keyPress
-    cmp #kernel.event.timer.EXPIRED
-    beq _timerEvent
     cmp #kernel.event.JOYSTICK
     bne _noKnownEvent
     jsr testJoyStick
@@ -108,14 +106,6 @@ _testCursorRight
 _shiftRight
     ldx #MOVE_RIGHT
     jsr performOperation
-    jmp eventLoop
-_timerEvent
-    lda myEvent.timer.cookie
-    cmp TIMER_COOKIE_GAME
-    beq _cookieMatches
-    jmp eventLoop
-_cookieMatches
-    ;
     jmp eventLoop
 _endEvent
     rts
