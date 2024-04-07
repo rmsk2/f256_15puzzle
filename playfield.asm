@@ -32,7 +32,6 @@ init
     lda #15
     sta PLAY_FIELD.offsetEmpty
     
-    jsr shuffle
     jsr sprites.init
     rts
 
@@ -59,6 +58,23 @@ _loop
     inx
     cpx #16
     bne _loop
+    rts
+
+
+; If the game state is ordered, clear carry upon return
+isOrdered
+    ldy #0
+_test
+    lda INIT_VALUES, y
+    cmp PLAY_FIELD.playField, y
+    bne _doneError
+    iny
+    cpy #16
+    bne _test
+    clc
+    rts
+_doneError
+    sec
     rts
 
 
@@ -153,7 +169,7 @@ COUNT_X .byte ?
 COUNT_Y .byte ?
 ; Draw playing field as a whole
 draw
-    ; "draw" border arounf playing field
+    ; "draw" border around playing field
     lda #18
     sta RECT_PARAMS.xpos
     lda #9
@@ -233,11 +249,18 @@ POS_13 .dstruct MoveOffsets_t, NOT_POSSIBLE, 9, 14, 12, MOVE_DOWN | MOVE_LEFT | 
 POS_14 .dstruct MoveOffsets_t, NOT_POSSIBLE, 10, 15, 13, MOVE_DOWN | MOVE_LEFT | MOVE_RIGHT
 POS_15 .dstruct MoveOffsets_t, NOT_POSSIBLE, 11, NOT_POSSIBLE, 14, MOVE_DOWN | MOVE_RIGHT
 
+MSG_ALL_IN_ORDER .text "All is in order. Well done!"
+
 makeMove
     jsr makeMoveInternal
     bcs _doneIllegal
     ;jsr draw
     jsr sprites.animate
+    jsr isOrdered
+    bcs _done
+    #locate 24, 3
+    #printString MSG_ALL_IN_ORDER, len(MSG_ALL_IN_ORDER)
+_done
     rts
 _doneIllegal
     jsr sid.beepIllegal
@@ -271,6 +294,22 @@ _randLoop
     cmp #3
     bne _randLoop
     rts
+
+
+shuffleTest
+    stz RAND_COUNT
+_randLoop
+    jsr random.getNibble
+    and #03
+    tay
+    ldx TRANS_RANDOM, y
+    jsr makeMoveInternal
+    inc RAND_COUNT
+    lda RAND_COUNT
+    cmp #5
+    bne _randLoop
+    rts
+
 
 ; x contains move selected by the user
 makeMoveInternal

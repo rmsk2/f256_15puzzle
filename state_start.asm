@@ -41,18 +41,42 @@ _startGame
 _endEvent
     rts
 
-MSG_START_1 .text "F256 15 puzzle start state"
+MSG_START_1 .text "Press F1 to shuffle playfield and start game"
+MSG_START_2 .text "Press F3 to reset to BASIC"
+MSG_START_3 .text "15 puzzle. Written by Martin Grap (@mgr42)"
+MSG_START_4 .text "during the April 2024 48 hour game jam on the Foenix Discord"
+MSG_START_5 .text "See https://github.com/rmsk2/f256_15puzzle"
 
 enterState
     lda GLOBAL_STATE.globalCol
     sta CURSOR_STATE.col
     jsr txtio.clear
 
-    #locate 9, 35
+    ; set black background color in graphics mode
+    stz $D00D
+    stz $D00E
+    stz $D00F
+
+    jsr txtio.newLine
+    jsr playfield.init
+    jsr playfield.draw
+
+    #locate 16, 3
+    #printString MSG_START_3, len(MSG_START_3)
+    #locate 8, 6
+    #printString MSG_START_4, len(MSG_START_4)
+
+    #locate 15, 49
     #printString MSG_START_1, len(MSG_START_1)
+    #locate 23, 52
+    #printString MSG_START_2, len(MSG_START_2)
+    #locate 16, 59
+    #printString MSG_START_5, len(MSG_START_5)
+
     rts
 
 leaveState
+    jsr sprites.deactivate
     rts
 
 

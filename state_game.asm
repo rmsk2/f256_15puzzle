@@ -9,8 +9,8 @@ State15Puzzle_t .struct
 ST_15_PUZZLE_DATA .dstruct State15Puzzle_t
 
 
-MSG_GAME_START_1 .text "15 puzzle game state", $0d
-
+MSG_GAME_1 .text "Press F1 to abort game and return to intro screen"
+MSG_GAME_2 .text "Use cursor keys or joystick in port 1 to move tiles"
 
 enterState
     lda GLOBAL_STATE.globalCol
@@ -23,7 +23,14 @@ enterState
 
     jsr txtio.newLine
     jsr playfield.init
+    jsr playfield.shuffle
     jsr playfield.draw
+
+    #locate 13, 49
+    #printString MSG_GAME_1, len(MSG_GAME_1)
+    #locate 12, 52
+    #printString MSG_GAME_2, len(MSG_GAME_2)
+
     rts
 
 eventLoop
