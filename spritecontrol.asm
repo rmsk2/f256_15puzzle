@@ -102,16 +102,26 @@ callSetSpritePointer
     sta SPRITE_PTR1+1
     rts
 
+onWithSize .macro size
+    lda #\size | SPR_LAYER_0 | SPR_LUT_0 | SPR_ENABLE
+    sta (SPRITE_PTR1)
+.endmacro
+
+
+offWithSize .macro size
+    lda #\size | SPR_LAYER_0 | SPR_LUT_0 
+    sta (SPRITE_PTR1)
+.endmacro
+
+
 ; SPRITE_PTR1 has to be set to correct block
 on
-    lda #SPR_SIZE_32 | SPR_LAYER_0 | SPR_LUT_0 | SPR_ENABLE
-    sta (SPRITE_PTR1)
+    #onWithSize SPR_SIZE_32
     rts
 
 ; SPRITE_PTR1 has to be set to correct block
 off
-    lda #SPR_SIZE_32 | SPR_LAYER_0 | SPR_LUT_0 
-    sta (SPRITE_PTR1)
+    #offWithSize SPR_SIZE_32
     rts    
 
 
