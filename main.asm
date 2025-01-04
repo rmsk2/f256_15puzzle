@@ -1,6 +1,6 @@
 .include "api.asm"
 .cpu "w65c02"
-* = $2500
+* = $0300
 
 jmp main
 
@@ -53,6 +53,7 @@ main
     lda #GLOBAL_COL
     sta GLOBAL_STATE.globalCol
     jsr txtio.init
+    jsr txtio.cursorOff
     jsr random.init
     jsr sid.init
     ; create a new event queue and save pointer to event queue of superbasic
@@ -68,6 +69,12 @@ mainLoop
     jsr stateEventLoop
     bra mainLoop
 _done
+    ; restart to BASIC
+    lda #65
+    sta kernel.args.run.block_id
+    jsr kernel.RunBlock
+    ; we should never get here
+
     jsr sys64738
 
     rts
