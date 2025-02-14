@@ -43,7 +43,7 @@ _endEvent
 
 MSG_START_1 .text "Press F1 to shuffle playfield and start game"
 MSG_START_2 .text "Press F3 to reset to BASIC"
-MSG_START_3 .text "15 puzzle. Written by Martin Grap (@mgr42)"
+MSG_START_3 .text "15 puzzle. Written by Martin Grap (@mgr42) v1.1"
 MSG_START_4 .text "during the April 2024 48 hour game jam on the Foenix Discord"
 MSG_START_5 .text "See https://github.com/rmsk2/f256_15puzzle"
 
@@ -61,7 +61,7 @@ enterState
     jsr playfield.init
     jsr playfield.draw
 
-    #locate 16, 3
+    #locate 14, 3
     #printString MSG_START_3, len(MSG_START_3)
     #locate 8, 6
     #printString MSG_START_4, len(MSG_START_4)
